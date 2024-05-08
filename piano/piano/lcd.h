@@ -1,4 +1,4 @@
-
+#define F_CPU 16000000UL
 #ifndef LCD_H_
 #define LCD_H_
 

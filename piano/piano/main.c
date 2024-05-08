@@ -87,7 +87,7 @@ volatile uint8_t readInput2(void){
 		
 		/* Clock the register */
 		PORTC &= ~(1 << PC0);
-		_delay_us(1); 
+		_delay_us(1);
 		PORTC |= (1 << PC0);
 	}
 
@@ -125,13 +125,31 @@ int main(void)
 {
 	
 	
+for (double scale = 1.0; scale <= 3; scale += 0.005) {
+	Play_Sound_new(F3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(F3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(Gb3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(G3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(Ab3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(A3);
+}for (double scale = 1.0; scale <= 3; scale += 0.005) {
+Play_Sound_new(Bb3);
+}
+
+
+
+
 	lcd_init();
 	lcd_clear();
 	_delay_ms (50);
 	lcd_goto_xy(0, 0);
 	lcd_write_word("Toy Piano Music!");
-	lcd_goto_xy(1, 0);
-	lcd_write_word("Play Piano......");
+	
 	/* Initialize PORTC and set PC0, PC1, PC2 as output */
 	DDRC |= 0b11111111;
 	DDRD |= 0b11111111;
@@ -142,64 +160,74 @@ int main(void)
 		uint8_t switchNo3 = readInput3();
 		
 		float freq = 0;
-		/* Iterate through each bit of switchNo */
-		for (int i = 0; i < 8; i++) {
-			/* Check if the i-th bit of switchNo is set */
-			if (switchNo & (1 << i)) {
-				/* Set frequency based on which button is pressed */
-				switch (i) {
-					case 0:freq += F3;break;
-					case 1:freq += Gb3;break;
-					case 2:freq += G3;break;
-					case 3:freq += Ab3;break;
-					case 4:freq += A3;break;
-					case 5:freq += Bb3;break;
-					case 6:freq += B3;break;
-					case 7:freq += C4;break;
-					default:break;
+		
+		if(PINB & 0B00000001){
+			/* Iterate through each bit of switchNo */
+			for (int i = 0; i < 8; i++) {
+				/* Check if the i-th bit of switchNo is set */
+				if (switchNo & (1 << i)) {
+					/* Set frequency based on which button is pressed */
+					switch (i) {
+						case 0:freq += F3;break;
+						case 1:freq += Gb3;break;
+						case 2:freq += G3;break;
+						case 3:freq += Ab3;break;
+						case 4:freq += A3;break;
+						case 5:freq += Bb3;break;
+						case 6:freq += B3;break;
+						case 7:freq += C4;break;
+						default:break;
+					}
 				}
 			}
-		}
-		
-		
-		
-		for (int i = 0; i < 8; i++) {
-			/* Check if the i-th bit of switchNo is set */
-			if (switchNo2 & (1 << i)) {
-				/* Set frequency based on which button is pressed */
-				switch (i) {
-					case 0:freq += Db4;break;
-					case 1:freq += D4;break;
-					case 2:freq += Eb4;break;
-					case 3:freq += E4;break;
-					case 4:freq += F4;break;
-					case 5:freq += Gb4;break;
-					case 6:freq += G4;break;
-					case 7:freq += Ab4;break;
-					default:break;
+			
+			
+			
+			for (int i = 0; i < 8; i++) {
+				/* Check if the i-th bit of switchNo is set */
+				if (switchNo2 & (1 << i)) {
+					/* Set frequency based on which button is pressed */
+					switch (i) {
+						case 0:freq += Db4;break;
+						case 1:freq += D4;break;
+						case 2:freq += Eb4;break;
+						case 3:freq += E4;break;
+						case 4:freq += F4;break;
+						case 5:freq += Gb4;break;
+						case 6:freq += G4;break;
+						case 7:freq += Ab4;break;
+						default:break;
+					}
 				}
 			}
-		}
-		
-		
-		for (int i = 0; i < 8; i++) {
-			/* Check if the i-th bit of switchNo is set */
-			if (switchNo3 & (1 << i)) {
-				/* Set frequency based on which button is pressed */
-				switch (i) {
-					case 0:freq += A4;break;
-					case 1:freq += Bb4;break;
-					case 2:freq += B4;break;
-					case 3:freq += C5;break;
-					case 4:freq += Db5;break;
-					case 5:freq += D5;break;
-					case 6:freq += Eb5;break;
-					case 7:freq += E5;break;
-					default:
-					break;
+			
+			
+			for (int i = 0; i < 8; i++) {
+				/* Check if the i-th bit of switchNo is set */
+				if (switchNo3 & (1 << i)) {
+					/* Set frequency based on which button is pressed */
+					switch (i) {
+						case 0:freq += A4;break;
+						case 1:freq += Bb4;break;
+						case 2:freq += B4;break;
+						case 3:freq += C5;break;
+						case 4:freq += Db5;break;
+						case 5:freq += D5;break;
+						case 6:freq += Eb5;break;
+						case 7:freq += E5;break;
+						default:
+						break;
+					}
 				}
 			}
+			}else if(PINB & 0B00000010){
+			lcd_goto_xy(1, 0);
+			lcd_write_word("Play Guitar.....");
+			}else if(PINB & 0B00000100){
+			lcd_goto_xy(1, 0);
+			lcd_write_word("Play Flute......");
 		}
+		
 		
 		if (freq > 0) {
 			Play_Sound(freq);
@@ -210,6 +238,41 @@ int main(void)
 
 	}
 }
+
+#include <math.h>
+
+#define PI 3.14159265
+
+void Play_Sound_new(float frequency)
+{
+	float duration = 0.0005; // Duration in seconds
+	int sampleRate = 30000; // Sample rate in Hz
+	int numSamples = duration * sampleRate;
+	float wavelength = 1.0 / frequency;
+
+	BUZZER_DDR |= (1 << BUZZER_PIN);
+
+	for (int i = 0; i < numSamples; i++)
+	{
+		float t = (float)i / sampleRate;
+		float sinValue = sin(2 * PI * frequency * t);
+
+		// Convert the sine value to a suitable output range for the buzzer
+		int outputValue = (int)((sinValue + 1.0) * 127.0);
+
+		// Output the value to the buzzer
+		BUZZER_PORT = outputValue;
+
+		// Delay to maintain the sample rate
+		_delay_us(1000000.0 / sampleRate);
+	}
+
+	// Stop sound
+	BUZZER_PORT &= ~(1 << BUZZER_PIN);
+}
+
+
+
 
 void Play_Sound(float frequency)
 {
