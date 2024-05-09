@@ -1,3 +1,4 @@
+
 #include <avr/io.h>
 #define F_CPU 16000000UL
 #define __DELAY_BACKWARD_COMPATIBLE__
@@ -123,33 +124,110 @@ volatile uint8_t readInput3(void){
 }
 int main(void)
 {
-	
-	
-for (double scale = 1.0; scale <= 3; scale += 0.005) {
+lcd_init();
+lcd_clear();
+_delay_ms (50);
+lcd_goto_xy(0, 0);
+lcd_write_word("Toy Piano Music!");
 	Play_Sound_new(F3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(F3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(Gb3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(G3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(Ab3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(A3);
-}for (double scale = 1.0; scale <= 3; scale += 0.005) {
-Play_Sound_new(Bb3);
-}
+
+	Play_Sound_new(Gb3);
+
+	Play_Sound_new(G3);
+
+	Play_Sound_new(Ab3);
+
+	Play_Sound_new(A3);
+
+	Play_Sound_new(Bb3);
+
+	Play_Sound_new(B3);
+
+	Play_Sound_new(C4);
+	Play_Sound_new(Db4);
+
+	Play_Sound_new(D4);
+
+	Play_Sound_new(Eb4);
+
+	Play_Sound_new(E4);
+
+	Play_Sound_new(F4);
+
+	Play_Sound_new(Gb4);
+
+Play_Sound_new(G4);
+
+Play_Sound_new(Ab4);
+
+Play_Sound_new(A4);
+
+Play_Sound_new(Bb4);
+
+Play_Sound_new(B4);
+
+Play_Sound_new(C5);
+
+Play_Sound_new(Db5);
+
+Play_Sound_new(D5);
+
+Play_Sound_new(Eb5);
+
+Play_Sound_new(E5);
 
 
+_delay_ms(2000);
 
 
-	lcd_init();
-	lcd_clear();
-	_delay_ms (50);
-	lcd_goto_xy(0, 0);
-	lcd_write_word("Toy Piano Music!");
-	
+Play_Sound(F3);
+
+Play_Sound(Gb3);
+
+Play_Sound(G3);
+
+Play_Sound(Ab3);
+
+Play_Sound(A3);
+
+Play_Sound(Bb3);
+
+Play_Sound(B3);
+
+Play_Sound(C4);
+Play_Sound(Db4);
+
+Play_Sound(D4);
+
+Play_Sound(Eb4);
+
+Play_Sound(E4);
+
+Play_Sound(F4);
+
+Play_Sound(Gb4);
+
+Play_Sound(G4);
+
+Play_Sound(Ab4);
+
+Play_Sound(A4);
+
+Play_Sound(Bb4);
+
+Play_Sound(B4);
+
+Play_Sound(C5);
+
+Play_Sound(Db5);
+
+Play_Sound(D5);
+
+Play_Sound(Eb5);
+
+Play_Sound(E5);
+
+
 	/* Initialize PORTC and set PC0, PC1, PC2 as output */
 	DDRC |= 0b11111111;
 	DDRD |= 0b11111111;
@@ -220,13 +298,7 @@ Play_Sound_new(Bb3);
 					}
 				}
 			}
-			}else if(PINB & 0B00000010){
-			lcd_goto_xy(1, 0);
-			lcd_write_word("Play Guitar.....");
-			}else if(PINB & 0B00000100){
-			lcd_goto_xy(1, 0);
-			lcd_write_word("Play Flute......");
-		}
+			}
 		
 		
 		if (freq > 0) {
@@ -243,54 +315,73 @@ Play_Sound_new(Bb3);
 
 #define PI 3.14159265
 
+#define SAMPLE_RATE     30000  // Adjust as needed
+
+
 void Play_Sound_new(float frequency)
-{
-	float duration = 0.0005; // Duration in seconds
-	int sampleRate = 30000; // Sample rate in Hz
-	int numSamples = duration * sampleRate;
-	float wavelength = 1.0 / frequency;
-
-	BUZZER_DDR |= (1 << BUZZER_PIN);
-
-	for (int i = 0; i < numSamples; i++)
-	{
-		float t = (float)i / sampleRate;
-		float sinValue = sin(2 * PI * frequency * t);
-
-		// Convert the sine value to a suitable output range for the buzzer
-		int outputValue = (int)((sinValue + 1.0) * 127.0);
-
-		// Output the value to the buzzer
-		BUZZER_PORT = outputValue;
-
-		// Delay to maintain the sample rate
-		_delay_us(1000000.0 / sampleRate);
-	}
-
-	// Stop sound
-	BUZZER_PORT &= ~(1 << BUZZER_PIN);
-}
-
-
-
-
-void Play_Sound(float frequency)
 {
 	float duration=5;
 	long int i,cycles;
 	float wavelength = 1.25;
-	
+
 	cycles=duration/wavelength;
 
 	BUZZER_DDR |= (1 << BUZZER_PIN);
 
-	for (i=0;i<cycles;i++)
+
+	for (i = 0; i < 10; i++)
 	{
-		_delay_ms(frequency);
-		BUZZER_PORT |= (1 << BUZZER_PIN);
-		_delay_ms(frequency);
-		BUZZER_PORT &= ~(1 << BUZZER_PIN);
+
+		for(int j=0;j<20;j++){
+			_delay_ms(frequency / 10.5);
+			BUZZER_PORT |= (1 << BUZZER_PIN);
+			_delay_ms(22 * frequency / 10.5); // Ensuring the same duty cycle for both on and off times
+			BUZZER_PORT &= ~(1 << BUZZER_PIN);
+		}
+		for(int j=0;j<10;j++){
+			_delay_ms(frequency / 10.55);
+			BUZZER_PORT |= (1 << BUZZER_PIN);
+			_delay_ms(22.1 * frequency / 10.55); // Ensuring the same duty cycle for both on and off times
+			BUZZER_PORT &= ~(1 << BUZZER_PIN);
+		}
+		
+		for(int j=0;j<5;j++){
+			_delay_ms(frequency / 10.6);
+			BUZZER_PORT |= (1 << BUZZER_PIN);
+			_delay_ms(22.2 * frequency / 10.6); // Ensuring the same duty cycle for both on and off times
+			BUZZER_PORT &= ~(1 << BUZZER_PIN);
+		}
+		for(int j=0;j<10;j++){
+			_delay_ms(frequency / 10.55);
+			BUZZER_PORT |= (1 << BUZZER_PIN);
+			_delay_ms(22.1 * frequency / 10.55); // Ensuring the same duty cycle for both on and off times
+			BUZZER_PORT &= ~(1 << BUZZER_PIN);
+		}
+
 	}
+
+}
+
+void Play_Sound(float frequency)
+{
+	for(int i=0;i<200;i++){
+		float duration=5;
+		long int i,cycles;
+		float wavelength = 1.25;
+		
+		cycles=duration/wavelength;
+
+		BUZZER_DDR |= (1 << BUZZER_PIN);
+
+		for (i=0;i<cycles;i++)
+		{
+			_delay_ms(frequency);
+			BUZZER_PORT |= (1 << BUZZER_PIN);
+			_delay_ms(frequency);
+			BUZZER_PORT &= ~(1 << BUZZER_PIN);
+		}
+	}
+	
 }
 
 
