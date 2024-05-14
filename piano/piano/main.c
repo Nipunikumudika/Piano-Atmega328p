@@ -49,6 +49,55 @@
 #define BUZZER_PORT     PORTB
 #define BUZZER_PIN      3
 
+#define USART_BAUDRATE 9600 // Desired Baud Rate
+#define BAUD_PRESCALER (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
+
+#define ASYNCHRONOUS (0<<UMSEL00) // USART Mode Selection
+#define PARITY_MODE  (0<<UPM00) // USART Parity Bit Selection
+#define STOP_BIT (0<<USBS0)     // USART Stop Bit Selection
+#define DATA_BIT   (3<<UCSZ00)  // USART Data Bit Selection
+
+void USART_Init()
+{
+	// Set Baud Rate
+	UBRR0H = BAUD_PRESCALER >> 8;
+	UBRR0L = BAUD_PRESCALER;
+	
+	// Set Frame Format
+	UCSR0C = ASYNCHRONOUS | PARITY_MODE | STOP_BIT | DATA_BIT;
+	
+	// Enable Receiver and Transmitter
+	UCSR0B = (1<<RXEN0) | (1<<TXEN0);
+}
+
+
+void USART_TransmitChar(uint8_t DataByte) {
+	while (!(UCSR0A & (1<<UDRE0))); // Wait until UDR is ready
+	UDR0 = DataByte;
+}
+
+void USART_TransmitString(char *str) {
+	while (*str) {
+		USART_TransmitChar(*str);
+		str++;
+	}
+}
+
+void USART_TransmitInteger(int value) {
+	char buffer[10]; // Assuming a maximum of 10 digits for the integer
+	sprintf(buffer, "%d", value);
+	USART_TransmitString(buffer);
+}
+
+void USART_TransmitFixedPoint(float value) {
+	int integer_part = (int)value;
+	USART_TransmitInteger(integer_part);
+	USART_TransmitChar('.');
+	int fractional_part = (int)((value - integer_part) * 10000);
+	USART_TransmitInteger(fractional_part);
+}
+
+
 void Play_Sound_violin(float frequency)
 {
 	float duration=5;
@@ -290,6 +339,7 @@ ISR( INT1_vect )
 	if (PIND & (1 << PD3)) {
 		lcd_goto_xy(0, 0);
 		lcd_write_word("Bluetooth.......");
+		USART_Init();
 		bluetooth=1;
 	}else{
 		lcd_goto_xy(0, 0);
@@ -329,6 +379,7 @@ _delay_ms (50);
 	if (PIND & (1 << PD3)) {
 		lcd_goto_xy(0, 0);
 		lcd_write_word("Bluetooth.......");
+		USART_Init();
 		bluetooth=1;
 	}else{
 		lcd_goto_xy(0, 0);
@@ -336,26 +387,29 @@ _delay_ms (50);
 		bluetooth=0;
 	}
 	sei();			/* Enable Global Interrupt */
-	
+	float frequecy=0;
 	
 	
 	while (1){
 		float frequecy = calculateFrequency();
 		
 			if (frequecy > 0) {
+				
 				if(instrument==0 && bluetooth==0){
 					Play_Sound_piano(frequecy);
-				}else if(instrument==1 && bluetooth==0){
+				}
+				else if(instrument==1 && bluetooth==0){
 					Play_Sound_violin(frequecy);
 				}
-				
-				}else{
-				stop_sound();
+				else if(bluetooth==1){
+				USART_TransmitInteger(instrument); // Example integer
+				USART_TransmitChar(' '); // Space separator
+				USART_TransmitFixedPoint(frequecy); // Example float
+				USART_TransmitChar('\r'); // Carriage return
+				USART_TransmitChar('\n'); // Newline
 			}
-	
-			
-		
-		
-
+			}else{
+			stop_sound();
+		}
 	}
 }
