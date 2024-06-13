@@ -1,0 +1,2 @@
+should connect vcc to avcc in atmega328p
+should connect reset to vcc through 10k resistor(atmega)

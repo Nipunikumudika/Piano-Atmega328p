@@ -350,78 +350,10 @@ int main(void)
 
 lcd_init();
 lcd_clear();
-_delay_ms (50);
-lcd_goto_xy(1, 0);
-lcd_write_word("Play Piano......");
-
-USART_Init();
-while (1) {
-	for(int i=0;i<200;i++){
-		USART_TransmitInteger(0);
-		USART_TransmitChar(' ');
-		USART_TransmitFixedPoint(2.8641);
-		USART_TransmitChar('\r'); // Carriage return
-		USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-	USART_TransmitInteger(0);
-	USART_TransmitChar(' ');
-	USART_TransmitFixedPoint(2.7027);
-	USART_TransmitChar('\r'); // Carriage return
-	USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-	USART_TransmitInteger(0);
-	USART_TransmitChar(' ');
-	USART_TransmitFixedPoint(2.5510);
-	USART_TransmitChar('\r'); // Carriage return
-	USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-	USART_TransmitInteger(0);
-	USART_TransmitChar(' ');
-	USART_TransmitFixedPoint(0.7163);
-	USART_TransmitChar('\r'); // Carriage return
-	USART_TransmitChar('\n');
-	}
-	_delay_ms(3000);
-	for(int i=0;i<200;i++){
-		USART_TransmitInteger(1);
-		USART_TransmitChar(' ');
-		USART_TransmitFixedPoint(2.8641);
-		USART_TransmitChar('\r'); // Carriage return
-		USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-		USART_TransmitInteger(1);
-		USART_TransmitChar(' ');
-		USART_TransmitFixedPoint(2.7027);
-		USART_TransmitChar('\r'); // Carriage return
-		USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-		USART_TransmitInteger(1);
-		USART_TransmitChar(' ');
-		USART_TransmitFixedPoint(2.5510);
-		USART_TransmitChar('\r'); // Carriage return
-		USART_TransmitChar('\n');
-	}
-	_delay_ms(1000);
-	for(int i=0;i<200;i++){
-		USART_TransmitInteger(1);
-		USART_TransmitChar(' ');
-		USART_TransmitFixedPoint(0.7163);
-		USART_TransmitChar('\r'); // Carriage return
-		USART_TransmitChar('\n');
-	}
-}
-
-
+stop_sound();
+for(int i=0;i<100;i++){
+Play_Sound_piano(2.8641);}
+stop_sound();
 	DDRC |= 0b11111111;
 	DDRD |= 0b11111111;
 	
