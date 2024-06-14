@@ -120,16 +120,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="lcd.c">
+    <Compile Include="hd44780pcf8574.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="lcd.h">
+    <Compile Include="hd44780pcf8574.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="pin_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="twi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="twi.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

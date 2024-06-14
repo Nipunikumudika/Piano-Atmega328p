@@ -1,3 +1,4 @@
+
 from array import array
 from time import sleep
 import serial
@@ -42,7 +43,7 @@ if __name__ == "__main__":
     # Initialize Pygame
     pre_init(44100, -16, 1, 1024)
     pygame.init()
-    serial_port = serial.Serial(port='COM10', baudrate=9600, timeout=0, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
+    serial_port = serial.Serial(port='COM9', baudrate=9600, timeout=0, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE)
     first_frequency=0
     first_instrument=-1
     note_instance=0
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     timeout = 0.2  # 200 milliseconds
     while True:
         data = serial_port.read(1024)
+        #print(data)
         current_time = time.time()
         if data:
             last_received_time = current_time
@@ -66,10 +68,10 @@ if __name__ == "__main__":
                     sec_instrument=int(parts[0])
                     print(line_str)
                     if(first_frequency!=sec_frequency or first_instrument!=sec_instrument):
-                        # print(first_frequency)
-                        # print(sec_frequency)
+                        #print(first_frequency)
+                        #print(sec_frequency)
                         if (note_instance):  # Check if note_instance is defined
-                            # print("have note instance")
+                            #print("have note instance")
                             note_instance.stop()
                         note_instance = Note(sec_frequency, waveform=sec_instrument)
                         note_instance.play(-1)
@@ -82,5 +84,6 @@ if __name__ == "__main__":
         else:
             if note_instance and (current_time - last_received_time > timeout):
                 note_instance.stop()
+                first_frequency=0
                 note_instance = None  # Reset note_instance to avoid repeated stopping
                 print("Sound stopped due to timeout")

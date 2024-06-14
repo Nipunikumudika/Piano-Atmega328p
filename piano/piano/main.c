@@ -4,10 +4,9 @@
 #define __DELAY_BACKWARD_COMPATIBLE__
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "LCD.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "hd44780pcf8574.h"
 #define INTERRUPT_PIN_PD3 PD3
 #define INTERRUPT_PIN_PD5 PD5
 
@@ -55,6 +54,8 @@
 #define PARITY_MODE  (0<<UPM00) // USART Parity Bit Selection
 #define STOP_BIT (0<<USBS0)     // USART Stop Bit Selection
 #define DATA_BIT   (3<<UCSZ00)  // USART Data Bit Selection
+
+char addr = PCF8574_ADDRESS;
 
 void USART_Init()
 {
@@ -106,31 +107,31 @@ void Play_Sound_violin(float frequency)
 	BUZZER_DDR |= (1 << BUZZER_PIN);
 
 
-		for(int j=0;j<20;j++){
-			_delay_ms(frequency / 10.5);
-			BUZZER_PORT |= (1 << BUZZER_PIN);
-			_delay_ms(22 * frequency / 10.5); 
-			BUZZER_PORT &= ~(1 << BUZZER_PIN);
-		}
-		for(int j=0;j<10;j++){
-			_delay_ms(frequency / 10.55);
-			BUZZER_PORT |= (1 << BUZZER_PIN);
-			_delay_ms(22.1 * frequency / 10.55);
-			BUZZER_PORT &= ~(1 << BUZZER_PIN);
-		}
-		
-		for(int j=0;j<5;j++){
-			_delay_ms(frequency / 10.6);
-			BUZZER_PORT |= (1 << BUZZER_PIN);
-			_delay_ms(22.2 * frequency / 10.6);
-			BUZZER_PORT &= ~(1 << BUZZER_PIN);
-		}
-		for(int j=0;j<10;j++){
-			_delay_ms(frequency / 10.55);
-			BUZZER_PORT |= (1 << BUZZER_PIN);
-			_delay_ms(22.1 * frequency / 10.55);
-			BUZZER_PORT &= ~(1 << BUZZER_PIN);
-		}
+	for(int j=0;j<20;j++){
+		_delay_ms(frequency / 10.5);
+		BUZZER_PORT |= (1 << BUZZER_PIN);
+		_delay_ms(22 * frequency / 10.5);
+		BUZZER_PORT &= ~(1 << BUZZER_PIN);
+	}
+	for(int j=0;j<10;j++){
+		_delay_ms(frequency / 10.55);
+		BUZZER_PORT |= (1 << BUZZER_PIN);
+		_delay_ms(22.1 * frequency / 10.55);
+		BUZZER_PORT &= ~(1 << BUZZER_PIN);
+	}
+	
+	for(int j=0;j<5;j++){
+		_delay_ms(frequency / 10.6);
+		BUZZER_PORT |= (1 << BUZZER_PIN);
+		_delay_ms(22.2 * frequency / 10.6);
+		BUZZER_PORT &= ~(1 << BUZZER_PIN);
+	}
+	for(int j=0;j<10;j++){
+		_delay_ms(frequency / 10.55);
+		BUZZER_PORT |= (1 << BUZZER_PIN);
+		_delay_ms(22.1 * frequency / 10.55);
+		BUZZER_PORT &= ~(1 << BUZZER_PIN);
+	}
 
 	
 }
@@ -245,10 +246,10 @@ volatile uint8_t readInput3(void){
 
 volatile float calculateFrequency(void){
 	float freq = 0;
-/* Read the input value */
-uint8_t switchNo = readInput1();
-uint8_t switchNo2 = readInput2();
-uint8_t switchNo3 = readInput3();
+	/* Read the input value */
+	uint8_t switchNo = readInput1();
+	uint8_t switchNo2 = readInput2();
+	uint8_t switchNo3 = readInput3();
 
 	/* Iterate through each bit of switchNo */
 	for (int i = 0; i < 8; i++) {
@@ -320,12 +321,12 @@ ISR( INT0_vect )
 {
 	if (PIND & (1 << PD2)) {
 		instrument=0;
-		lcd_goto_xy(1, 0);
-		lcd_write_word("Play Piano......");
-	}else{
+		HD44780_PCF8574_PositionXY(addr, 0, 1);
+		HD44780_PCF8574_DrawString(addr, "Play Piano......");
+		}else{
 		instrument=1;
-		lcd_goto_xy(1, 0);
-		lcd_write_word("Play Violin.....");
+		HD44780_PCF8574_PositionXY(addr, 0, 1);
+		HD44780_PCF8574_DrawString(addr, "Play Violin.....");
 		
 	}
 	
@@ -334,13 +335,13 @@ ISR( INT0_vect )
 ISR( INT1_vect )
 {
 	if (PIND & (1 << PD3)) {
-		lcd_goto_xy(0, 0);
-		lcd_write_word("Bluetooth.......");
+		HD44780_PCF8574_PositionXY(addr, 0, 0);
+		HD44780_PCF8574_DrawString(addr, "Bluetooth.......");
 		USART_Init();
 		bluetooth=1;
-	}else{
-		lcd_goto_xy(0, 0);
-		lcd_write_word("Toy Piano Music!");
+		}else{
+		HD44780_PCF8574_PositionXY(addr, 0, 0);
+		HD44780_PCF8574_DrawString(addr, "Toy Piano Music!");
 		bluetooth=0;
 	}
 }
@@ -348,39 +349,46 @@ ISR( INT1_vect )
 int main(void)
 {
 
-lcd_init();
-lcd_clear();
-stop_sound();
-for(int i=0;i<100;i++){
-Play_Sound_piano(2.8641);}
-stop_sound();
+	
+	HD44780_PCF8574_Init(addr);
+	//display clear
+	HD44780_PCF8574_DisplayClear(addr);
+	//display on
+	HD44780_PCF8574_DisplayOn(addr);
+	
+
+	stop_sound();
+	for(int i=0;i<100;i++){
+	Play_Sound_piano(2.8641);}
+	stop_sound();
 	DDRC |= 0b11111111;
 	DDRD |= 0b11111111;
 	
-	  EICRA |= (1 << ISC00);    // set INT0 to trigger on ANY logic change
-	  EIMSK |= (1 << INT0);     // Turns on INT0
+	EICRA |= (1 << ISC00);    // set INT0 to trigger on ANY logic change
+	EIMSK |= (1 << INT0);     // Turns on INT0
 	
 	EICRA |= (1 << ISC10);    // set INT1 to trigger on ANY logic change
 	EIMSK |= (1 << INT1);     // Turns on INT1
 	
 	if (PIND & (1 << PD2)) {
 		instrument=0;
-		lcd_goto_xy(1, 0);
-		lcd_write_word("Play Piano......");
+		HD44780_PCF8574_PositionXY(addr, 0, 1);
+		HD44780_PCF8574_DrawString(addr, "Play Piano......");
 		}else{
 		instrument=1;
-		lcd_goto_xy(1, 0);
-		lcd_write_word("Play Violin.....");
+		// position
+		HD44780_PCF8574_PositionXY(addr, 0, 1);
+		HD44780_PCF8574_DrawString(addr, "Play Violin.....");
 		
 	}
 	if (PIND & (1 << PD3)) {
-		lcd_goto_xy(0, 0);
-		lcd_write_word("Bluetooth.......");
+		HD44780_PCF8574_PositionXY(addr, 0, 0);
+		HD44780_PCF8574_DrawString(addr, "Bluetooth.......");
 		USART_Init();
 		bluetooth=1;
-	}else{
-		lcd_goto_xy(0, 0);
-		lcd_write_word("Toy Piano Music!");
+		}else{
+		HD44780_PCF8574_PositionXY(addr, 0, 0);
+		HD44780_PCF8574_DrawString(addr, "Toy Piano Music!");
 		bluetooth=0;
 	}
 	sei();			/* Enable Global Interrupt */
@@ -390,20 +398,21 @@ stop_sound();
 	while (1){
 		float frequecy = calculateFrequency();
 		
-			if (frequecy > 0) {
-				
-				if(instrument==0 && bluetooth==0){
-					Play_Sound_piano(frequecy);
-				}
-				else if(instrument==1 && bluetooth==0){
-					Play_Sound_violin(frequecy);
-				}
-				else if(bluetooth==1){
-				USART_TransmitInteger(instrument); 
+		if (frequecy > 0) {
+			
+			if(instrument==0 && bluetooth==0){
+				Play_Sound_piano(frequecy);
+			}
+			else if(instrument==1 && bluetooth==0){
+				Play_Sound_violin(frequecy);
+			}
+			else if(bluetooth==1){
+				stop_sound();
+				USART_TransmitInteger(instrument);
 				USART_TransmitChar(' ');
-				USART_TransmitFixedPoint(frequecy); 
+				USART_TransmitFixedPoint(frequecy);
 				USART_TransmitChar('\r'); // Carriage return
-				USART_TransmitChar('\n'); 
+				USART_TransmitChar('\n');
 			}
 			}else{
 			stop_sound();
