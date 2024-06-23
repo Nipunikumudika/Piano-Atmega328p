@@ -1,18 +1,4 @@
-/** 
- * ---------------------------------------------------------------+ 
- * @desc        HD44780 with PCF8574 8-bit I/O expander for TWI 
- * ---------------------------------------------------------------+ 
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @datum       18.11.2020
- * @file        hd44780pcf8547.h
- * @tested      AVR Atmega328p
- *
- * @depend      twi, pcf8547
- * ---------------------------------------------------------------+
- */
+
 #ifndef __HD44780PCF8574_H__
 #define __HD44780PCF8574_H__
 

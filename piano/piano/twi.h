@@ -1,16 +1,3 @@
-/** 
- * ---------------------------------------------------+ 
- * @desc        Two Wire Interface / I2C Communication
- * ---------------------------------------------------+ 
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @datum       06.09.2020
- * @file        twi.h
- * @tested      AVR Atmega328
- * ---------------------------------------------------
- */
 
 #include <stdio.h>
 #include <avr/io.h>
