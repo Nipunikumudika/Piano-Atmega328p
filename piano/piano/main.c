@@ -170,27 +170,28 @@ void stop_sound(void)
 volatile uint8_t readInput1(void){
 	uint8_t reader = 0;
 
-	/* Set PINC2 (PC2) as input */
+	//Set PINC2 (PC2) as input 
 	DDRC &= ~(1 << PC2);
 
-	/* Raise LD pin */
+	//Raise LD pin 
 	PORTC |= (1 << PC1);
 
 	for (int i = 0; i < 8; i++){
-		reader <<= 1;   /* Get a one-bit digital input */
+		reader <<= 1;  // Get a one-bit digital input 
 		reader |= ((PINC & (1 << PC2)) ? 1 : 0);
 		
-		/* Clock the register */
+		 //Clock the register 
 		PORTC &= ~(1 << PC0);
 		_delay_us(1);
 		PORTC |= (1 << PC0);
-	}
+	} 
 
-	/* Lower the LD pin */
+	//Lower the LD pin 
 	PORTC &= ~(1 << PC1);
 
 	return reader;
 }
+
 
 volatile uint8_t readInput2(void){
 	uint8_t reader = 0;
@@ -204,7 +205,31 @@ volatile uint8_t readInput2(void){
 	for (int i = 0; i < 8; i++){
 		reader <<= 1;   /* Get a one-bit digital input */
 		reader |= ((PINB & (1 << PB4)) ? 1 : 0);
-		
+
+		/* Clock the register */
+		PORTC &= ~(1 << PC0);
+		_delay_us(1);
+		PORTC |= (1 << PC0);
+	}
+
+	/* Lower the LD pin */
+	PORTC &= ~(1 << PC1);
+
+	return reader;
+}
+volatile uint8_t readInput3(void){
+	uint8_t reader = 0;
+
+	/* Set PINB4 (PB5) as input */
+	DDRB &= ~(1 << PB5);
+
+	/* Raise LD pin */
+	PORTC |= (1 << PC1);
+
+	for (int i = 0; i < 8; i++){
+		reader <<= 1;   /* Get a one-bit digital input */
+		reader |= ((PINB & (1 << PB5)) ? 1 : 0);
+
 		/* Clock the register */
 		PORTC &= ~(1 << PC0);
 		_delay_us(1);
@@ -218,30 +243,6 @@ volatile uint8_t readInput2(void){
 }
 
 
-volatile uint8_t readInput3(void){
-	uint8_t reader = 0;
-
-	/* Set PINB5 (PB5) as input */
-	DDRB &= ~(1 << PB5);
-
-	/* Raise LD pin */
-	PORTC |= (1 << PC1);
-
-	for (int i = 0; i < 8; i++){
-		reader <<= 1;   /* Get a one-bit digital input */
-		reader |= ((PINB & (1 << PB5 )) ? 1 : 0);
-		
-		/* Clock the register */
-		PORTC &= ~(1 << PC0);
-		_delay_us(1); // You can use delay functions for a more accurate timing
-		PORTC |= (1 << PC0);
-	}
-
-	/* Lower the LD pin */
-	PORTC &= ~(1 << PC1);
-
-	return reader;
-}
 
 
 volatile float calculateFrequency(void){
@@ -251,11 +252,10 @@ volatile float calculateFrequency(void){
 	uint8_t switchNo2 = readInput2();
 	uint8_t switchNo3 = readInput3();
 
-	/* Iterate through each bit of switchNo */
 	for (int i = 0; i < 8; i++) {
-		/* Check if the i-th bit of switchNo is set */
+		//Check if the i-th bit of switchNo is set
 		if (switchNo & (1 << i)) {
-			/* Set frequency based on which button is pressed */
+			// Set frequency based on which button is pressed 
 			switch (i) {
 				case 0:freq += F3;break;
 				case 1:freq += Gb3;break;
@@ -271,11 +271,10 @@ volatile float calculateFrequency(void){
 	}
 	
 	
-	
 	for (int i = 0; i < 8; i++) {
-		/* Check if the i-th bit of switchNo is set */
+		//Check if the i-th bit of switchNo is set
 		if (switchNo2 & (1 << i)) {
-			/* Set frequency based on which button is pressed */
+			//Set frequency based on which button is pressed
 			switch (i) {
 				case 0:freq += Db4;break;
 				case 1:freq += D4;break;
@@ -291,10 +290,10 @@ volatile float calculateFrequency(void){
 	}
 	
 	
-	for (int i = 0; i < 8; i++) {
-		/* Check if the i-th bit of switchNo is set */
+for (int i = 0; i < 8; i++) {
+		// Check if the i-th bit of switchNo is set
 		if (switchNo3 & (1 << i)) {
-			/* Set frequency based on which button is pressed */
+			//Set frequency based on which button is pressed
 			switch (i) {
 				case 0:freq += A4;break;
 				case 1:freq += Bb4;break;
@@ -310,15 +309,21 @@ volatile float calculateFrequency(void){
 		}
 	}
 
-
 	return freq;
 }
 
 uint8_t instrument = -1;
 uint8_t bluetooth = -1;
 
+// Define BADISR_vect to handle unhandled interrupts
+ISR(BADISR_vect)
+{
+	for (;;) {	}
+}
+
 ISR( INT0_vect )
 {
+	_delay_ms(50);
 	if (PIND & (1 << PD2)) {
 		instrument=0;
 		HD44780_PCF8574_PositionXY(addr, 0, 1);
@@ -334,6 +339,7 @@ ISR( INT0_vect )
 
 ISR( INT1_vect )
 {
+	_delay_ms(50);
 	if (PIND & (1 << PD3)) {
 		HD44780_PCF8574_PositionXY(addr, 0, 0);
 		HD44780_PCF8574_DrawString(addr, "Bluetooth.......");
@@ -348,7 +354,12 @@ ISR( INT1_vect )
 
 int main(void)
 {
+	PORTC |= (1 << PC2);  // Enable pull-up on PC2
+	PORTB |= (1 << PB4);  // Enable pull-up on PB4
+	PORTB |= (1 << PB5);  // Enable pull-up on PB5
 
+	stop_sound();
+	
 	
 	HD44780_PCF8574_Init(addr);
 	//display clear
@@ -356,11 +367,14 @@ int main(void)
 	//display on
 	HD44780_PCF8574_DisplayOn(addr);
 	
-
-	stop_sound();
-	for(int i=0;i<100;i++){
-	Play_Sound_piano(2.8641);}
-	stop_sound();
+for(int i=0;i<20;i++){
+Play_Sound_piano(2);}
+for(int i=0;i<20;i++){
+Play_Sound_piano(2.5);}
+for(int i=0;i<20;i++){
+Play_Sound_piano(4);}
+stop_sound();
+	
 	DDRC |= 0b11111111;
 	DDRD |= 0b11111111;
 	
