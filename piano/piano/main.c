@@ -98,11 +98,6 @@ void USART_TransmitFixedPoint(float value) {
 
 void Play_Sound_violin(float frequency)
 {
-	float duration=5;
-	long int i,cycles;
-	float wavelength = 1.25;
-
-	cycles=duration/wavelength;
 
 	BUZZER_DDR |= (1 << BUZZER_PIN);
 

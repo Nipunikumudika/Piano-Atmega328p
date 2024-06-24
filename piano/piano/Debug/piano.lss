@@ -13,19 +13,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   4 .debug_aranges 00000180  00000000  00000000  00001cc0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000020d8  00000000  00000000  00001e40  2**0
+  5 .debug_info   000020a3  00000000  00000000  00001e40  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000c24  00000000  00000000  00003f18  2**0
+  6 .debug_abbrev 00000c17  00000000  00000000  00003ee3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000011f6  00000000  00000000  00004b3c  2**0
+  7 .debug_line   000011f7  00000000  00000000  00004afa  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  000004d8  00000000  00000000  00005d34  2**2
+  8 .debug_frame  000004d8  00000000  00000000  00005cf4  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000829  00000000  00000000  0000620c  2**0
+  9 .debug_str    00000829  00000000  00000000  000061cc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00001f34  00000000  00000000  00006a35  2**0
+ 10 .debug_loc    00001f34  00000000  00000000  000069f5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 000002d0  00000000  00000000  00008969  2**0
+ 11 .debug_ranges 000002d0  00000000  00000000  00008929  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -590,10 +590,6 @@ void Play_Sound_violin(float frequency)
      3f2:	7a 83       	std	Y+2, r23	; 0x02
      3f4:	8b 83       	std	Y+3, r24	; 0x03
      3f6:	9c 83       	std	Y+4, r25	; 0x04
-	long int i,cycles;
-	float wavelength = 1.25;
-
-	cycles=duration/wavelength;
 
 	BUZZER_DDR |= (1 << BUZZER_PIN);
      3f8:	23 9a       	sbi	0x04, 3	; 4
@@ -844,7 +840,7 @@ _delay_loop_2(uint16_t __count)
      552:	01 97       	sbiw	r24, 0x01	; 1
      554:	9a 87       	std	Y+10, r25	; 0x0a
      556:	89 87       	std	Y+9, r24	; 0x09
-	cycles=duration/wavelength;
+{
 
 	BUZZER_DDR |= (1 << BUZZER_PIN);
 

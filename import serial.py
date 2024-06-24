@@ -57,7 +57,7 @@ if __name__ == "__main__":
         #print(data)
         current_time = time.time()
         if data:
-            print(data)
+            #print(data)
             last_received_time = current_time
             buffer.extend(data)
             while b'\r\n' in buffer:
